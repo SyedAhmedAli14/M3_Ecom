@@ -11,11 +11,14 @@ interface Product {
   thumbnail: string;
 }
 
-export default function ProductDetails({ params }: { params: { product_id: string } }) {
+export default async function ProductDetails({
+  params,
+}: {
+  params: { product_id: string };
+}) {
   const [product, setProduct] = useState<Product | null>(null);
   const router = useRouter();
 
-  // Convert useEffect to async function to handle async behavior of params
   useEffect(() => {
     const fetchProduct = async () => {
       const res = await fetch(`https://dummyjson.com/products/${params.product_id}`);
@@ -24,7 +27,7 @@ export default function ProductDetails({ params }: { params: { product_id: strin
     };
 
     fetchProduct();
-  }, [params.product_id]); // Dependency array to re-run when product_id changes
+  }, [params.product_id]);
 
   const addToCart = () => {
     fetch("/api/cart", {
@@ -40,18 +43,19 @@ export default function ProductDetails({ params }: { params: { product_id: strin
   };
 
   if (!product) {
-    return <p className="loading">Loading...</p>;
+    return <p>Loading...</p>;
   }
 
   return (
-    <div className="product-details">
+    <div style={{ padding: "20px" }}>
       <h2>{product.title}</h2>
       <img
         src={product.thumbnail}
         alt={product.title}
+        style={{ width: "300px", borderRadius: "10px" }}
       />
       <p>{product.description}</p>
-      <p className="price">${product.price.toFixed(2)}</p>
+      <p>${product.price.toFixed(2)}</p>
       <button onClick={addToCart}>Add to Cart</button>
     </div>
   );
