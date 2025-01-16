@@ -11,23 +11,24 @@ interface Product {
   thumbnail: string;
 }
 
-export default async function ProductDetails({
+export default function ProductDetails({
   params,
 }: {
-  params: { product_id: string };
+  params: Promise<{ product_id: string }>;
 }) {
   const [product, setProduct] = useState<Product | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const res = await fetch(`https://dummyjson.com/products/${params.product_id}`);
+      const resolvedParams = await params;
+      const res = await fetch(`https://dummyjson.com/products/${resolvedParams.product_id}`);
       const data = await res.json();
       setProduct(data);
     };
 
     fetchProduct();
-  }, [params.product_id]);
+  }, [params]);
 
   const addToCart = () => {
     fetch("/api/cart", {
